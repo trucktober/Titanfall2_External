@@ -457,7 +457,7 @@ int main(int, char**)
                 uintptr_t isNPC = m.readmem<long long>(m.findDMA(entAddr, Soff.entName));
                 if (entity == NULL) { break; }
                 if (entity == localPlayer) { continue; }
-                
+               
                 bool isPilot = (isAlive == 1296) && (player == 125780153691248);
                 bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238);
 
@@ -473,14 +473,16 @@ int main(int, char**)
 
         if (tog.ESP) {
             Matrix VM = m.readmem<Matrix>(addr.VM);
-            for (uintptr_t i = 0; i < 100; ++i) {
+            for (uintptr_t i = 0; i < 200; ++i) {
                 uintptr_t entAddr = addr.npsEntList + i * 0x8;
                 uintptr_t entity = m.readmem<uintptr_t>(entAddr);
                 uintptr_t player = m.readmem<uintptr_t>(entity + off.playerName);
                 uintptr_t isAlive = m.readmem<int>(entity + off.isAlive);
-                uintptr_t entEyePosAddr = m.findDMA(addr.entList + i * 0x20, off.entEyePos);
+                uintptr_t entEyePosAddr = m.findDMA(addr.npsEntList + i * 0x8, off.entEyePos);
                 uintptr_t entEyePos = m.readmem<float>(entEyePosAddr);
                 uintptr_t isNPC = m.readmem<long long>(m.findDMA(entAddr, Soff.entName));
+                uintptr_t team = m.readmem<int>(entity + off.team);
+                uintptr_t localPlayer_Team = m.readmem<int>(localPlayer + off.team);
                 if (entity == NULL) { break; }              
                 if (entity == localPlayer) { continue; }
                 
@@ -489,19 +491,17 @@ int main(int, char**)
                 headOrigin.z = entEyePos;
                 int health = m.readmem<int>(entity + off.playerHealth);
                 if (health > 100) { continue; }
+               
+                bool isPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team != team);
+                bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team != team);
+                bool FriendlyPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team == team);
+                bool FriendlyNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team == team);
 
-                bool isPilot = (isAlive == 1296) && (player == 125780153691248);
-                bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238);
-                bool FriendlyPilot = 0;
-                bool FriendlyNPC = 0;
-
-                if ((tog.Box_Pilot_ESP && isPilot) || (tog.Box_NPC_ESP && isRelevantNPC)) {
+                if ((tog.Box_F_NPC_ESP && FriendlyPilot) || (tog.Box_Pilot_ESP && isPilot) || (tog.Box_F_NPC_ESP && FriendlyNPC) || (tog.Box_NPC_ESP && isRelevantNPC)) { // check for grunt health and normalize
                     if (WTS(Origin, Pos, VM.VM) && WTS(headOrigin, HPos, VM.VM)) {
                         DrawBox(health, Pos, HPos);
                     }
                 }
-
-
             }
         }
 
@@ -513,6 +513,8 @@ int main(int, char**)
                 uintptr_t player = m.readmem<uintptr_t>(entity + off.playerName);
                 uintptr_t isAlive = m.readmem<int>(entity + off.isAlive);
                 uintptr_t isNPC = m.readmem<long long>(m.findDMA(entAddr, Soff.entName));
+                uintptr_t team = m.readmem<int>(entity + off.team);
+                uintptr_t localPlayer_Team = m.readmem<int>(localPlayer + off.team);
                 Vec3 Origin = m.readmem<Vec3>(entity + off.playerOrgiin);
                 if (entity == NULL) { break; }
                 if (entity == localPlayer) { continue; }
@@ -520,28 +522,34 @@ int main(int, char**)
                 uintptr_t boneMatrix = m.readmem<uintptr_t>(entity + off.boneMatrix);
                 int health = m.readmem<int>(entity + off.playerHealth);
 
-                bool isPilot = (isAlive == 1296) && (player == 125780153691248);
-                bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238);
+                bool isPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team != team);
+                bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team != team);
+                bool FriendlyPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team == team);
+                bool FriendlyNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team == team);
 
-                if (health <= 100) {
-                    DrawBoneEsp(m, boneMatrix, bone4, bone8);
-                    DrawBoneEsp(m, boneMatrix, bone8, bone9); // lower neck to upper neck  
-                    DrawBoneEsp(m, boneMatrix, bone8, bone13); // left shoulder  
-                    DrawBoneEsp(m, boneMatrix, bone13, bone17); // left elbow
-                    DrawBoneEsp(m, boneMatrix, bone17, bone18); // left wrist
-                    DrawBoneEsp(m, boneMatrix, bone18, bone19); // left hand 
-                    DrawBoneEsp(m, boneMatrix, bone8, bone37); // right shoulder
-                    DrawBoneEsp(m, boneMatrix, bone37, bone41); // right elbow           
-                    DrawBoneEsp(m, boneMatrix, bone41, bone42); //right wrist
-                    DrawBoneEsp(m, boneMatrix, bone42, bone43); // rigth hand
-                    //DrawBoneEsp(m, boneMatrix, bone4, bone60); // left pelvis
-                    //DrawBoneEsp(m, boneMatrix, bone4, bone65); //rigth pelvis
-                    DrawBoneEsp(m, boneMatrix, bone4, bone61); // left knee
-                    DrawBoneEsp(m, boneMatrix, bone61, bone62); //left foot     
-                    DrawBoneEsp(m, boneMatrix, bone63, bone63); //left foot
-                    DrawBoneEsp(m, boneMatrix, bone4, bone66); //rigth knee
-                    DrawBoneEsp(m, boneMatrix, bone66, bone67);// right foot
+
+                if ((tog.Box_F_NPC_ESP && FriendlyPilot) || (tog.Box_Pilot_ESP && isPilot)){
+                    if (health <= 100) {
+                        DrawBoneEsp(m, boneMatrix, bone4, bone8);
+                        DrawBoneEsp(m, boneMatrix, bone8, bone9); // lower neck to upper neck  
+                        DrawBoneEsp(m, boneMatrix, bone8, bone13); // left shoulder  
+                        DrawBoneEsp(m, boneMatrix, bone13, bone17); // left elbow
+                        DrawBoneEsp(m, boneMatrix, bone17, bone18); // left wrist
+                        DrawBoneEsp(m, boneMatrix, bone18, bone19); // left hand 
+                        DrawBoneEsp(m, boneMatrix, bone8, bone37); // right shoulder
+                        DrawBoneEsp(m, boneMatrix, bone37, bone41); // right elbow           
+                        DrawBoneEsp(m, boneMatrix, bone41, bone42); //right wrist
+                        DrawBoneEsp(m, boneMatrix, bone42, bone43); // rigth hand
+                        //DrawBoneEsp(m, boneMatrix, bone4, bone60); // left pelvis
+                        //DrawBoneEsp(m, boneMatrix, bone4, bone65); //rigth pelvis
+                        DrawBoneEsp(m, boneMatrix, bone4, bone61); // left knee
+                        DrawBoneEsp(m, boneMatrix, bone61, bone62); //left foot     
+                        DrawBoneEsp(m, boneMatrix, bone63, bone63); //left foot
+                        DrawBoneEsp(m, boneMatrix, bone4, bone66); //rigth knee
+                        DrawBoneEsp(m, boneMatrix, bone66, bone67);// right foot
+                    }
                 }
+
 
             }
         }
