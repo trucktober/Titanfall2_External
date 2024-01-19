@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{055c866e-ec76-4c30-b79d-c17b7b6e8794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Memory">
+      <UniqueIdentifier>{ed8ae9b1-02d5-438f-8350-1b0ad93f3670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Process">
+      <UniqueIdentifier>{6716e892-4fbc-44e1-a905-7975538eb9dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="RenWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Mem.cpp">
+      <Filter>Resource Files\Memory</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mem.h">
+      <Filter>Resource Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="T2.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector Structor.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="helper.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Chams.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="S_T2.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleplayer.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="includes.h">
+      <Filter>Resource Files\Process</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
