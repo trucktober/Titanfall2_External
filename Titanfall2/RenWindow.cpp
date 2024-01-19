@@ -1035,7 +1035,7 @@ int main(int, char**)
                 std::cout << i << std::endl;
             }
         }
-    
+            //
         // -----------------------------TEST AREA---------------------------
 
         // Rendering
