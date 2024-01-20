@@ -45,7 +45,7 @@ struct {
 	 float radarRenderDist = 1000.f, radarCirc = 0.20f, radarAlpha = 9.f, NPCSize = 5.f, PilotSize = 5.f, PlayerSize = 5.f, radarBorderAlpha = 9.f;
 	 bool radarNPC = true, radarPilot = true, radarNPC_F = false, radarPilot_F = false, radarLocalPlayer = true, radarEdgeDot = true, radarBackground = true;
 	 Vec2 radarPos = {-.87f, .7f};
-	 bool radarMenuEX = false, radarBorder = false;
+	 bool radarMenuEX = false, radarBorder = false, radarExit = false, radarOpen = false;
 }Stog;
 
 struct {

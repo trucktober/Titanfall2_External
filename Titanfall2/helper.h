@@ -269,3 +269,61 @@ uintptr_t Aim(mem& m, Vec3 Head, Vec3 Origin, float& c, Rotate& r, uintptr_t& pi
 	
 }
 
+void radarGUI() {
+	if (ImGui::Begin("Custom Radar Settings", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {
+		ImGui::SetWindowSize({ 550.f, 500.f });
+		if (ImGui::BeginTabBar("Settings")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, ImGui::GetStyle().FramePadding.y - 2.f));
+			ImGui::SameLine(187.f);
+			if (ImGui::Button("Exit")) { Stog.radarExit = true; }
+			else { Stog.radarExit = false; };
+			ImGui::PopStyleVar();
+			ImGui::ShowDemoWindow();
+			if (ImGui::BeginTabItem("Aesthetic")) {
+				ImGui::SeparatorText("Radar");
+				ImGui::Checkbox("Show Radar", &Stog.radar2D); if (Stog.radar2D) { Stog.radarFill = true; }
+				else { Stog.radarFill = false; };
+				ImGui::SeparatorText("Position");
+				ImGui::SliderFloat("X-Axis", &Stog.radarPos.x, -1.f, 1.f, "%.2f");
+				ImGui::SliderFloat("Y-Axis", &Stog.radarPos.y, -1.f, 1.f, "%.2f");
+				ImGui::SeparatorText("Sizing");
+				ImGui::SliderFloat("Circumference", &Stog.radarCirc, 0.01f, 5.f, "%.3f");
+				ImGui::SliderFloat("Player Size", &Stog.PlayerSize, .01f, 100.0f, "%.01f");
+				ImGui::SliderFloat("Pilot Size", &Stog.PilotSize, .01f, 100.0f, "%.01f");
+				ImGui::SliderFloat("NPC Size", &Stog.NPCSize, .01f, 100.0f, "%.01f");
+				ImGui::SeparatorText("Radar Visability");
+				ImGui::SliderFloat("Background Transparency", &Stog.radarAlpha, .01f, 10.0f, "%.01f");
+				ImGui::SliderFloat("Border Transparency", &Stog.radarBorderAlpha, .01f, 10.0f, "%.01f");
+				ImGui::SeparatorText("Options");
+				ImGui::Checkbox("Show Border", &Stog.radarBorder);
+				ImGui::Checkbox("Show Backround", &Stog.radarBackground);
+				ImGui::Checkbox("Show Player Dot", &Stog.radarLocalPlayer);
+				ImGui::Checkbox("Show Edge Dots", &Stog.radarEdgeDot);
+				ImGui::Checkbox("Show NPC", &Stog.radarNPC);
+				ImGui::Checkbox("Show Friendly NPC", &Stog.radarNPC_F);
+				ImGui::Checkbox("Show Pilot", &Stog.radarPilot);
+				ImGui::Checkbox("Show Friendly Pilot", &Stog.radarPilot_F);
+				ImGui::SeparatorText("Color");
+				ImGui::ColorEdit3("Radar Background Color", Stog.radar_Circ_color, ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit3("Player Color", Stog.player_dot_color, ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit3("NPC Color", Stog.NPC_dot_color, ImGuiColorEditFlags_NoInputs);
+				if (Stog.radarBorder) { ImGui::ColorEdit3("Border Color", Stog.Border_color, ImGuiColorEditFlags_NoInputs); };
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Gameplay")) {
+				ImGui::SeparatorText("Radar Game Settings");
+				ImGui::SliderFloat("Render Distance", &Stog.radarRenderDist, 1.f, 10000.f, "%.f");
+				ImGui::SeparatorText("Radar Rotation");
+				if (ImGui::Checkbox("Rotate Enemys", &Stog.radarRotaed)) { Stog.radarNotRotated = !Stog.radarNotRotated; };
+				if (ImGui::Checkbox("Rotate FOV", &Stog.radarNotRotated)) { Stog.radarRotaed = !Stog.radarRotaed; };
+
+
+				ImGui::EndTabItem();
+			}
+
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
+
+}

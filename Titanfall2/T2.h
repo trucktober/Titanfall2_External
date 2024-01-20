@@ -61,7 +61,7 @@ struct {
 	bool Lines_NPC_ESP = false, Lines_F_NPC_ESP = false, Lines_Pilot_ESP = true, Lines_F_Pilot_ESP = false;
 	bool Box_NPC_ESP = false, Box_F_NPC_ESP = false, Box_Pilot_ESP = true, Box_F_Pilot_ESP = false;
 	bool Bone_NPC_ESP = false, Bone_F_NPC_ESP = false, Bone_Pilot_ESP = true, Bone_F_Pilot_ESP = false;
-
+	bool radar = false;
 	bool Pilot_Aimbot = true, Pilot_ESP = true, F_Pilot_ESP = false;
 	float smoothVal = 10.f, aimFOV = 30.f, distance = 500.f;
 	

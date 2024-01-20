@@ -164,6 +164,18 @@ int main(int, char**)
                     }
                     ImGui::SeparatorText("Chams");
                     ImGui::Checkbox("Fortnite Chams?", &tog.Chams);
+                    ImGui::SeparatorText("Radar");
+                    ImGui::Checkbox("Radar", &tog.radar);
+                    ImGui::SameLine();
+                    if (ImGui::TreeNode("Options")) {
+                        Stog.radarMenuEX = true;
+                        if (!Stog.radarExit && Stog.radarMenuEX) {
+                            radarGUI();
+                        }
+                        ImGui::TreePop();
+                    }
+                    else { Stog.radarMenuEX = false; Stog.radarExit = false; }
+
                     ImGui::SeparatorText("Options");
                     if (ImGui::TreeNode("Snaplines")) {
                         ImGui::Checkbox("Show NPC", &tog.Lines_NPC_ESP);
@@ -327,12 +339,13 @@ int main(int, char**)
                         ImGui::TreePop();
                     }
                     ImGui::SeparatorText("Radar");
-                    ImGui::Checkbox("Radar", &Stog.radar2D); if (Stog.radar2D) { Stog.radarFill = true; } else { Stog.radarFill = false; };
+                    ImGui::Checkbox("Radar", &Stog.radar2D); if (Stog.radar2D) { Stog.radarFill = true; }
+                    else { Stog.radarFill = false; };
                     if (ImGui::TreeNode("Options")) {
                         ImGui::SeparatorText("Radar Visability");
                         ImGui::SliderFloat("Transparency", &Stog.radarAlpha, .01f, 10.0f, "%.01f");
                         ImGui::SeparatorText("Radar Dimensions");
-                        
+
                         if (ImGui::Combo("Position", &radarPos, "Top Left\0Top Right\0Bottom Left\0Bottom Right\0Middle ( kill yourself)\0")) {
                             switch (radarPos) {
                             case 0: Stog.radarPos = { -.875f, .7f }; break;
@@ -340,7 +353,7 @@ int main(int, char**)
                             case 2: Stog.radarPos = { -.875f, -.69f }; break;
                             case 3: Stog.radarPos = { .875f, -.69f }; break;
                             case 4: Stog.radarPos = { .0f, .0f }; break;
-                            }           
+                            }
                         }
                         ImGui::SliderFloat("Radar Size", &Stog.radarCirc, 0.1f, .30f, "%.2f");
                         ImGui::SeparatorText("Radar Rotation");
@@ -352,7 +365,11 @@ int main(int, char**)
                         ImGui::Checkbox("Show Pilot", &Stog.radarPilot);
                         ImGui::Checkbox("Show Friendly Pilot", &Stog.radarPilot_F);
                         ImGui::SeparatorText("Custom Settings");
-                        ImGui::Checkbox("FNBR GOD Settings", &Stog.radarMenuEX);
+                        ImGui::Checkbox("FNBR GOD Settings", &Stog.radarOpen);
+                        if (Stog.radarOpen) {
+                            Stog.radarMenuEX = true;
+                            if (!Stog.radarExit && Stog.radarMenuEX) { radarGUI(); }}
+                        else { Stog.radarMenuEX = false; Stog.radarExit = false; }                     
                         ImGui::TreePop();
                     }
                     ImGui::EndTabItem();
@@ -364,64 +381,7 @@ int main(int, char**)
             ImGui::End();
             glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, GL_FALSE);
         }
-        if (Stog.radarMenuEX && tog.ToggleMenu) {
-           
-            if (ImGui::Begin("Custom Radar Settings", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {     
-                ImGui::SetWindowSize({ 550.f, 500.f });
-            if (ImGui::BeginTabBar("Settings")) {
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, ImGui::GetStyle().FramePadding.y - 2.f));            
-                ImGui::SameLine(187.f); 
-                if (ImGui::Button("Exit")) { Stog.radarMenuEX = false; }; 
-                ImGui::PopStyleVar();
-                ImGui::ShowDemoWindow();
-                if (ImGui::BeginTabItem("Aesthetic")) {
-                    ImGui::SeparatorText("Radar");
-                    ImGui::Checkbox("Show Radar", &Stog.radar2D); if (Stog.radar2D) { Stog.radarFill = true; }
-                    else { Stog.radarFill = false; };
-                    ImGui::SeparatorText("Position");
-                    ImGui::SliderFloat("X-Axis", &Stog.radarPos.x, -1.f, 1.f, "%.2f");                  
-                    ImGui::SliderFloat("Y-Axis", &Stog.radarPos.y, -1.f, 1.f, "%.2f");
-                    ImGui::SeparatorText("Sizing");
-                    ImGui::SliderFloat("Circumference", &Stog.radarCirc, 0.01f, 5.f, "%.3f");
-                    ImGui::SliderFloat("Player Size", &Stog.PlayerSize, .01f, 100.0f, "%.01f");
-                    ImGui::SliderFloat("Pilot Size", &Stog.PilotSize, .01f, 100.0f, "%.01f");
-                    ImGui::SliderFloat("NPC Size", &Stog.NPCSize, .01f, 100.0f, "%.01f");
-                    ImGui::SeparatorText("Radar Visability");
-                    ImGui::SliderFloat("Background Transparency", &Stog.radarAlpha, .01f, 10.0f, "%.01f");
-                    ImGui::SliderFloat("Border Transparency", &Stog.radarBorderAlpha, .01f, 10.0f, "%.01f");
-                    ImGui::SeparatorText("Options");
-                    ImGui::Checkbox("Show Border", &Stog.radarBorder);
-                    ImGui::Checkbox("Show Backround", &Stog.radarBackground);
-                    ImGui::Checkbox("Show Player Dot", &Stog.radarLocalPlayer);
-                    ImGui::Checkbox("Show Edge Dots", &Stog.radarEdgeDot);
-                    ImGui::Checkbox("Show NPC", &Stog.radarNPC);
-                    ImGui::Checkbox("Show Friendly NPC", &Stog.radarNPC_F);
-                    ImGui::Checkbox("Show Pilot", &Stog.radarPilot);
-                    ImGui::Checkbox("Show Friendly Pilot", &Stog.radarPilot_F);
-                    ImGui::SeparatorText("Color");
-                    ImGui::ColorEdit3("Radar Background Color", Stog.radar_Circ_color, ImGuiColorEditFlags_NoInputs);
-                    ImGui::ColorEdit3("Player Color", Stog.player_dot_color, ImGuiColorEditFlags_NoInputs);
-                    ImGui::ColorEdit3("NPC Color", Stog.NPC_dot_color, ImGuiColorEditFlags_NoInputs);       
-                    if (Stog.radarBorder) { ImGui::ColorEdit3("Border Color", Stog.Border_color, ImGuiColorEditFlags_NoInputs); };
-                        ImGui::EndTabItem();
-                    }
-                if (ImGui::BeginTabItem("Gameplay")) {
-                    ImGui::SeparatorText("Radar Game Settings");
-                    ImGui::SliderFloat("Render Distance", &Stog.radarRenderDist, 1.f, 10000.f, "%.f");
-                    ImGui::SeparatorText("Radar Rotation");
-                    if (ImGui::Checkbox("Rotate Enemys", &Stog.radarRotaed)) { Stog.radarNotRotated = !Stog.radarNotRotated; };
-                    if (ImGui::Checkbox("Rotate FOV", &Stog.radarNotRotated)) { Stog.radarRotaed = !Stog.radarRotaed; };
-                    
 
-                    ImGui::EndTabItem();
-                }
-                
-              }
-                ImGui::EndTabBar();
-            }           
-            ImGui::End();
-            glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, GL_FALSE);
-        }
 
 
         m.VirtProtc(addr.FOVmax, 2.4f);
@@ -448,7 +408,7 @@ int main(int, char**)
 
         if (tog.SnapLine) {
             Matrix VM = m.readmem<Matrix>(addr.VM);
-            
+
             for (uintptr_t i = 0; i < 100; ++i) {
                 uintptr_t entAddr = addr.npsEntList + i * 0x8;
                 uintptr_t entity = m.readmem<uintptr_t>(entAddr);
@@ -457,7 +417,7 @@ int main(int, char**)
                 uintptr_t isNPC = m.readmem<long long>(m.findDMA(entAddr, Soff.entName));
                 if (entity == NULL) { break; }
                 if (entity == localPlayer) { continue; }
-               
+
                 bool isPilot = (isAlive == 1296) && (player == 125780153691248);
                 bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238);
 
@@ -467,9 +427,9 @@ int main(int, char**)
                         DrawLines(Pos);
                     }
                 }
-                }
             }
-        
+        }
+
 
         if (tog.ESP) {
             Matrix VM = m.readmem<Matrix>(addr.VM);
@@ -483,15 +443,17 @@ int main(int, char**)
                 uintptr_t isNPC = m.readmem<long long>(m.findDMA(entAddr, Soff.entName));
                 uintptr_t team = m.readmem<int>(entity + off.team);
                 uintptr_t localPlayer_Team = m.readmem<int>(localPlayer + off.team);
-                if (entity == NULL) { break; }              
+                if (entity == NULL) { break; }
                 if (entity == localPlayer) { continue; }
-                
+
                 Vec3 Origin = m.readmem<Vec3>(entity + off.playerOrgiin);
                 Vec3 headOrigin = m.readmem<Vec3>(entity + off.playerOrgiin);
                 headOrigin.z = entEyePos;
                 int health = m.readmem<int>(entity + off.playerHealth);
-                if (health > 100) { continue; }
-               
+                if (health > 100 && health <= 0) continue; 
+                if (health == 130) { health -= 30; }
+                else if (health == 90) { health += 10; }
+                else if (health < 0) { health = 0; }
                 bool isPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team != team);
                 bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team != team);
                 bool FriendlyPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team == team);
@@ -518,7 +480,7 @@ int main(int, char**)
                 Vec3 Origin = m.readmem<Vec3>(entity + off.playerOrgiin);
                 if (entity == NULL) { break; }
                 if (entity == localPlayer) { continue; }
-                               
+
                 uintptr_t boneMatrix = m.readmem<uintptr_t>(entity + off.boneMatrix);
                 int health = m.readmem<int>(entity + off.playerHealth);
 
@@ -528,7 +490,7 @@ int main(int, char**)
                 bool FriendlyNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team == team);
 
 
-                if ((tog.Box_F_NPC_ESP && FriendlyPilot) || (tog.Box_Pilot_ESP && isPilot)){
+                if ((tog.Bone_F_Pilot_ESP && FriendlyPilot) || (tog.Bone_Pilot_ESP && isPilot)) {
                     if (health <= 100) {
                         DrawBoneEsp(m, boneMatrix, bone4, bone8);
                         DrawBoneEsp(m, boneMatrix, bone8, bone9); // lower neck to upper neck  
@@ -550,6 +512,27 @@ int main(int, char**)
                     }
                 }
 
+                if ((tog.Bone_F_NPC_ESP && FriendlyNPC) || (tog.Bone_NPC_ESP && isRelevantNPC)) {
+                    if (health <= 100) {
+                        DrawBoneEsp(m, boneMatrix, bone4, bone8);
+                        DrawBoneEsp(m, boneMatrix, bone8, bone9); // lower neck to upper neck  
+                        DrawBoneEsp(m, boneMatrix, bone8, bone13); // left shoulder  
+                        DrawBoneEsp(m, boneMatrix, bone13, bone17); // left elbow
+                        DrawBoneEsp(m, boneMatrix, bone17, bone18); // left wrist
+                        DrawBoneEsp(m, boneMatrix, bone18, bone19); // left hand 
+                        DrawBoneEsp(m, boneMatrix, bone8, bone37); // right shoulder
+                        DrawBoneEsp(m, boneMatrix, bone37, bone41); // right elbow           
+                        DrawBoneEsp(m, boneMatrix, bone41, bone42); //right wrist
+                        DrawBoneEsp(m, boneMatrix, bone42, bone43); // rigth hand
+                        //DrawBoneEsp(m, boneMatrix, bone4, bone60); // left pelvis
+                        //DrawBoneEsp(m, boneMatrix, bone4, bone65); //rigth pelvis
+                        DrawBoneEsp(m, boneMatrix, bone4, bone61); // left knee
+                        DrawBoneEsp(m, boneMatrix, bone61, bone62); //left foot     
+                        DrawBoneEsp(m, boneMatrix, bone63, bone63); //left foot
+                        DrawBoneEsp(m, boneMatrix, bone4, bone66); //rigth knee
+                        DrawBoneEsp(m, boneMatrix, bone66, bone67);// right foot
+                    }
+                }
 
             }
         }
@@ -568,7 +551,7 @@ int main(int, char**)
                 uintptr_t yawAddr = player + off.yaw;
                 uintptr_t pitchAddr = player + off.pitch;
                 uintptr_t isNPC = m.readmem<long long>(m.findDMA(entAddr, Soff.entName));
-                if (entity == NULL) { break; }             
+                if (entity == NULL) { break; }
                 if (entity == localPlayer) { continue; }
 
                 Vec3 Origin = m.readmem<Vec3>(addr.eyePos);
@@ -849,135 +832,36 @@ int main(int, char**)
             }
         }
 
-        if (Stog.radar2D) { // **** FIND NO RECOIL!!! ****
-            Matrix VM = m.readmem<Matrix>(addr.VM);
-            Vec2 RadarRotated = { 0, 0 }, RadarLine_1 = { 0,0 }, RadarLine_2 = { 0,0 };
-            DrawRadar(Stog.radarPos);
-            if (Stog.radarLocalPlayer) { DrawLocalPlayerDot(Stog.radarPos); }
-            if (Stog.radarBorder) { DrawRadarBorder(Stog.radarPos); }
-            r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI/180)) - (PI / 2);
-            Vec2 Res{ Res.x = GetSystemMetrics(SM_CXSCREEN), Res.y = GetSystemMetrics(SM_CYSCREEN) - 60.f };
-            float ResScale = Res.y / Res.x;
-            uintptr_t player = m.readmem<uintptr_t>(Saddr.localPlayer);
-            Vec3 player_origin = m.readmem<Vec3>(player + Soff.originOff);
-            for (uintptr_t i = 0; i < 200; ++i) {
-                uintptr_t entList = m.readmem<uintptr_t>(i * 0x8 + addr.npsEntList);
-                if (entList == localPlayer) { continue; }
-                if (entList == NULL) { break; }
-                uintptr_t entName = m.readmem<long long>(m.findDMA(i * 0x8 + addr.npsEntList, Soff.entName));
-                if (entName != 7236281242589818990 && entName != 7162254423226544238) { continue; }
-
-                Vec3 enemy_origin = m.readmem<Vec3>(entList + off.playerOrgiin);
-
-                //int health = m.readmem<int>(entList + off.playerHealth);
-                //if (health <= 0) continue;
-                //if (health == 130) { health -= 30; }
-                //else if (health == 90) { health += 10; }
-                //else if (health < 0) { health = 0; }
-
-                Vec2 enemy_radar_pos = { (enemy_origin.x - player_origin.x) * (Stog.radarCirc / Stog.radarRenderDist), (enemy_origin.y - player_origin.y) * (Stog.radarCirc / Stog.radarRenderDist) };
-                float EnemyRadarMag = enemy_radar_pos.x * enemy_radar_pos.x + enemy_radar_pos.y * enemy_radar_pos.y;
-
-                if (Stog.radarRotaed) {                 
-                    RadarRotated = { enemy_radar_pos.x * cosf(r.yaw) + enemy_radar_pos.y * sinf(r.yaw), enemy_radar_pos.x * sinf(r.yaw) - enemy_radar_pos.y * cosf(r.yaw) };
-                    Vec2 NDC_Rotated = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
-                    if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) {
-                        DrawNPCDot(NDC_Rotated);
-                    }
-                    else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) {
-                        RadarRotated.x = (RadarRotated.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-                        RadarRotated.y = (RadarRotated.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-                        Vec2 NDC_Rotated_2 = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
-                        DrawNPCDot(NDC_Rotated_2);
-                    }
-                    float LinePos = (5 * PI / 4);
-                    LinePos *= Stog.radarCirc / sqrt(LinePos * LinePos + LinePos * LinePos);                   
-                    Vec2 line_NDC_1 = { Stog.radarPos.x + LinePos * ResScale, Stog.radarPos.y + LinePos }, line_NDC_2 = { Stog.radarPos.x - LinePos * ResScale, Stog.radarPos.y + LinePos };
-                    DrawRadarLine(line_NDC_1);
-                    DrawRadarLine(line_NDC_2);
-                }
-                else if (Stog.radarNotRotated) {
-
-                    if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) { // draw in circle
-                        Vec2 NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
-                        DrawNPCDot(NDC);
-                    } else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) { // draw edge of circle
-                        enemy_radar_pos.x = (enemy_radar_pos.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-                        enemy_radar_pos.y = (enemy_radar_pos.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-                        Vec2 enemy_NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
-                        DrawNPCDot(enemy_NDC);
-                    }
-                    RadarLine_1 = { 1.f * cosf(r.yaw - .8f), 1.f * sinf(r.yaw - .8f) }, RadarLine_2 = { 1.f * cosf(r.yaw + .8f), 1.f * sinf(r.yaw + .8f) };
-                    float LineRadarMag = Stog.radarCirc / sqrt(RadarLine_1.x * RadarLine_1.x + RadarLine_1.y * RadarLine_1.y);
-                    RadarLine_1.x *= LineRadarMag;
-                    RadarLine_1.y *= LineRadarMag;
-                    RadarLine_2.x *= LineRadarMag;
-                    RadarLine_2.y *= LineRadarMag;
-                    Vec2 player_NDC1 = { Stog.radarPos.x + RadarLine_1.x * ResScale, Stog.radarPos.y - RadarLine_1.y }, player_NDC2 = { Stog.radarPos.x + RadarLine_2.x * ResScale, Stog.radarPos.y - RadarLine_2.y };
-                    if (player_NDC1.x && player_NDC1.y && player_NDC2.x && player_NDC2.y) {
-                        DrawRadarLine(player_NDC1);
-                        DrawRadarLine(player_NDC2);
-                    }
-                }
-
-            }
-        }
-
-        //if (Stog.radarCirc) {
-        //    // SETUP 
+        //if (Stog.radar2D) { // **** FIND NO RECOIL!!! ****
         //    Matrix VM = m.readmem<Matrix>(addr.VM);
         //    Vec2 RadarRotated = { 0, 0 }, RadarLine_1 = { 0,0 }, RadarLine_2 = { 0,0 };
         //    DrawRadar(Stog.radarPos);
         //    if (Stog.radarLocalPlayer) { DrawLocalPlayerDot(Stog.radarPos); }
         //    if (Stog.radarBorder) { DrawRadarBorder(Stog.radarPos); }
-        //    r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI / 180)) - (PI / 2);
+        //    r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI/180)) - (PI / 2);
         //    Vec2 Res{ Res.x = GetSystemMetrics(SM_CXSCREEN), Res.y = GetSystemMetrics(SM_CYSCREEN) - 60.f };
         //    float ResScale = Res.y / Res.x;
-        //    // ------- 
-
-
-
-
-        //  
-        //    // LOCAL PLAYER CHECK 
         //    uintptr_t player = m.readmem<uintptr_t>(Saddr.localPlayer);
         //    Vec3 player_origin = m.readmem<Vec3>(player + Soff.originOff);
-        //    // ------- 
-        //    
-
         //    for (uintptr_t i = 0; i < 200; ++i) {
         //        uintptr_t entList = m.readmem<uintptr_t>(i * 0x8 + addr.npsEntList);
         //        if (entList == localPlayer) { continue; }
         //        if (entList == NULL) { break; }
+        //        uintptr_t entName = m.readmem<long long>(m.findDMA(i * 0x8 + addr.npsEntList, Soff.entName));
+        //        if (entName != 7236281242589818990 && entName != 7162254423226544238) { continue; }
 
-
-        //        // NPC CHECK
-        //        if (Stog.radarNPC) {
-        //            uintptr_t isNPC = m.readmem<long long>(m.findDMA(i * 0x8 + addr.npsEntList, Soff.entName));
-        //            if (isNPC != 7236281242589818990 && isNPC != 7162254423226544238) { continue; }
-        //        }
-        //        // ------- 
-
-        //        // PILOT CHECK 
-        //        if (Stog.radarPilot) {
-        //            uintptr_t isPilot = m.readmem<uintptr_t>(entList + off.playerName);
-        //            if (isPilot != 125780153691248) { continue; }
-        //        }
-        //        // ------- 
-
-        //        // ALIVE CHECK 
-        //        uintptr_t isAlive = m.readmem<int>(entList + off.isAlive);
-        //        if (isAlive != 1296) { continue; }
-        //        // ------- 
-
-
-        //        // THE REST OF THE CODE LOL 
         //        Vec3 enemy_origin = m.readmem<Vec3>(entList + off.playerOrgiin);
+
+        //        //int health = m.readmem<int>(entList + off.playerHealth);
+        //        //if (health <= 0) continue;
+        //        //if (health == 130) { health -= 30; }
+        //        //else if (health == 90) { health += 10; }
+        //        //else if (health < 0) { health = 0; }
 
         //        Vec2 enemy_radar_pos = { (enemy_origin.x - player_origin.x) * (Stog.radarCirc / Stog.radarRenderDist), (enemy_origin.y - player_origin.y) * (Stog.radarCirc / Stog.radarRenderDist) };
         //        float EnemyRadarMag = enemy_radar_pos.x * enemy_radar_pos.x + enemy_radar_pos.y * enemy_radar_pos.y;
 
-        //        if (Stog.radarRotaed) {
+        //        if (Stog.radarRotaed) {                 
         //            RadarRotated = { enemy_radar_pos.x * cosf(r.yaw) + enemy_radar_pos.y * sinf(r.yaw), enemy_radar_pos.x * sinf(r.yaw) - enemy_radar_pos.y * cosf(r.yaw) };
         //            Vec2 NDC_Rotated = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
         //            if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) {
@@ -990,7 +874,7 @@ int main(int, char**)
         //                DrawNPCDot(NDC_Rotated_2);
         //            }
         //            float LinePos = (5 * PI / 4);
-        //            LinePos *= Stog.radarCirc / sqrt(LinePos * LinePos + LinePos * LinePos);
+        //            LinePos *= Stog.radarCirc / sqrt(LinePos * LinePos + LinePos * LinePos);                   
         //            Vec2 line_NDC_1 = { Stog.radarPos.x + LinePos * ResScale, Stog.radarPos.y + LinePos }, line_NDC_2 = { Stog.radarPos.x - LinePos * ResScale, Stog.radarPos.y + LinePos };
         //            DrawRadarLine(line_NDC_1);
         //            DrawRadarLine(line_NDC_2);
@@ -1000,55 +884,142 @@ int main(int, char**)
         //            if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) { // draw in circle
         //                Vec2 NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
         //                DrawNPCDot(NDC);
-        //            }
-        //            else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) { // draw edge of circle
+        //            } else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) { // draw edge of circle
         //                enemy_radar_pos.x = (enemy_radar_pos.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
         //                enemy_radar_pos.y = (enemy_radar_pos.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
         //                Vec2 enemy_NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
         //                DrawNPCDot(enemy_NDC);
         //            }
+        //            RadarLine_1 = { 1.f * cosf(r.yaw - .8f), 1.f * sinf(r.yaw - .8f) }, RadarLine_2 = { 1.f * cosf(r.yaw + .8f), 1.f * sinf(r.yaw + .8f) };
+        //            float LineRadarMag = Stog.radarCirc / sqrt(RadarLine_1.x * RadarLine_1.x + RadarLine_1.y * RadarLine_1.y);
+        //            RadarLine_1.x *= LineRadarMag;
+        //            RadarLine_1.y *= LineRadarMag;
+        //            RadarLine_2.x *= LineRadarMag;
+        //            RadarLine_2.y *= LineRadarMag;
+        //            Vec2 player_NDC1 = { Stog.radarPos.x + RadarLine_1.x * ResScale, Stog.radarPos.y - RadarLine_1.y }, player_NDC2 = { Stog.radarPos.x + RadarLine_2.x * ResScale, Stog.radarPos.y - RadarLine_2.y };
+        //            if (player_NDC1.x && player_NDC1.y && player_NDC2.x && player_NDC2.y) {
+        //                DrawRadarLine(player_NDC1);
+        //                DrawRadarLine(player_NDC2);
+        //            }
         //        }
-        //        RadarLine_1 = { 1.f * cosf(r.yaw - .8f), 1.f * sinf(r.yaw - .8f) }, RadarLine_2 = { 1.f * cosf(r.yaw + .8f), 1.f * sinf(r.yaw + .8f) };
-        //        float LineRadarMag = Stog.radarCirc / sqrt(RadarLine_1.x * RadarLine_1.x + RadarLine_1.y * RadarLine_1.y);
-        //        RadarLine_1.x *= LineRadarMag;
-        //        RadarLine_1.y *= LineRadarMag;
-        //        RadarLine_2.x *= LineRadarMag;
-        //        RadarLine_2.y *= LineRadarMag;
-        //        Vec2 player_NDC1 = { Stog.radarPos.x + RadarLine_1.x * ResScale, Stog.radarPos.y - RadarLine_1.y }, player_NDC2 = { Stog.radarPos.x + RadarLine_2.x * ResScale, Stog.radarPos.y - RadarLine_2.y };
-        //        if (player_NDC1.x && player_NDC1.y && player_NDC2.x && player_NDC2.y) {
-        //            DrawRadarLine(player_NDC1);
-        //            DrawRadarLine(player_NDC2);
-        //        }
-        //    }
 
+        //    }
         //}
-        // -----------------------------TEST AREA---------------------------
-        if (Stog.test) { // **** FIND NO RECOIL!!! ****
-            for (uintptr_t i = 0; i < 5; ++i) {
-                if (Stog.radarNPC) {
-                    if (i == 1) continue;
-                    if (i == 4) continue;
+
+        if (tog.radar) {
+            // SETUP 
+            Matrix VM = m.readmem<Matrix>(addr.VM);
+            Vec2 RadarRotated = { 0, 0 }, RadarLine_1 = { 0,0 }, RadarLine_2 = { 0,0 };
+            DrawRadar(Stog.radarPos);
+            if (Stog.radarLocalPlayer) { DrawLocalPlayerDot(Stog.radarPos); }
+            if (Stog.radarBorder) { DrawRadarBorder(Stog.radarPos); }
+            r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI / 180)) - (PI / 2);
+            Vec2 Res{ Res.x = GetSystemMetrics(SM_CXSCREEN), Res.y = GetSystemMetrics(SM_CYSCREEN) - 60.f };
+            float ResScale = Res.y / Res.x;
+            // ------- 
+
+            // LOCAL PLAYER CHECK 
+            uintptr_t player = m.readmem<uintptr_t>(Saddr.localPlayer);
+            Vec3 player_origin = m.readmem<Vec3>(player + Soff.originOff);
+
+            // ------- 
+            for (uintptr_t i = 0; i < 200; ++i) {
+                uintptr_t entList = i * 0x8 + addr.npsEntList;
+                uintptr_t entity = m.readmem<uintptr_t>(entList);
+                if (entList == localPlayer) { continue; }
+                if (entList == NULL) { break; }
+                uintptr_t isAlive = m.readmem<int>(entity + off.isAlive);
+                uintptr_t isNPC = m.readmem<long long>(m.findDMA(entList, Soff.entName));
+                uintptr_t team = m.readmem<int>(entity + off.team);
+                uintptr_t localPlayer_Team = m.readmem<int>(localPlayer + off.team);
+
+                bool isPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team != team);
+                bool isRelevantNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team != team);
+                bool FriendlyPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team == team);
+                bool FriendlyNPC = (isNPC == 7236281242589818990) || (isNPC == 7162254423226544238) && (localPlayer_Team == team);
+
+
+                // THE REST OF THE CODE LOL 
+                if ((Stog.radarNPC && FriendlyNPC) || (Stog.radarNPC_F && isRelevantNPC) || (Stog.radarPilot && isPilot) || (Stog.radarPilot_F && FriendlyPilot)) {
+                    Vec3 enemy_origin = m.readmem<Vec3>(entList + off.playerOrgiin);
+                    Vec2 enemy_radar_pos = { (enemy_origin.x - player_origin.x) * (Stog.radarCirc / Stog.radarRenderDist), (enemy_origin.y - player_origin.y) * (Stog.radarCirc / Stog.radarRenderDist) };
+                    float EnemyRadarMag = enemy_radar_pos.x * enemy_radar_pos.x + enemy_radar_pos.y * enemy_radar_pos.y;
+
+                    if (Stog.radarRotaed) {
+                        RadarRotated = { enemy_radar_pos.x * cosf(r.yaw) + enemy_radar_pos.y * sinf(r.yaw), enemy_radar_pos.x * sinf(r.yaw) - enemy_radar_pos.y * cosf(r.yaw) };
+                        Vec2 NDC_Rotated = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
+                        if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) {
+                            DrawNPCDot(NDC_Rotated);
+                        }
+                        else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) {
+                            RadarRotated.x = (RadarRotated.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
+                            RadarRotated.y = (RadarRotated.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
+                            Vec2 NDC_Rotated_2 = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
+                            DrawNPCDot(NDC_Rotated_2);
+                        }
+                        float LinePos = (5 * PI / 4);
+                        LinePos *= Stog.radarCirc / sqrt(LinePos * LinePos + LinePos * LinePos);
+                        Vec2 line_NDC_1 = { Stog.radarPos.x + LinePos * ResScale, Stog.radarPos.y + LinePos }, line_NDC_2 = { Stog.radarPos.x - LinePos * ResScale, Stog.radarPos.y + LinePos };
+                        DrawRadarLine(line_NDC_1);
+                        DrawRadarLine(line_NDC_2);
+                    }
+                    else if (Stog.radarNotRotated) {
+
+                        if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) { // draw in circle
+                            Vec2 NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
+                            DrawNPCDot(NDC);
+                        }
+                        else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) { // draw edge of circle
+                            enemy_radar_pos.x = (enemy_radar_pos.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
+                            enemy_radar_pos.y = (enemy_radar_pos.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
+                            Vec2 enemy_NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
+                            DrawNPCDot(enemy_NDC);
+                        }
+                        RadarLine_1 = { 1.f * cosf(r.yaw - .8f), 1.f * sinf(r.yaw - .8f) }, RadarLine_2 = { 1.f * cosf(r.yaw + .8f), 1.f * sinf(r.yaw + .8f) };
+                        float LineRadarMag = Stog.radarCirc / sqrt(RadarLine_1.x * RadarLine_1.x + RadarLine_1.y * RadarLine_1.y);
+                        RadarLine_1.x *= LineRadarMag;
+                        RadarLine_1.y *= LineRadarMag;
+                        RadarLine_2.x *= LineRadarMag;
+                        RadarLine_2.y *= LineRadarMag;
+                        Vec2 player_NDC1 = { Stog.radarPos.x + RadarLine_1.x * ResScale, Stog.radarPos.y - RadarLine_1.y }, player_NDC2 = { Stog.radarPos.x + RadarLine_2.x * ResScale, Stog.radarPos.y - RadarLine_2.y };
+                        if (player_NDC1.x && player_NDC1.y && player_NDC2.x && player_NDC2.y) {
+                            DrawRadarLine(player_NDC1);
+                            DrawRadarLine(player_NDC2);
+                        }
+                    }
                 }
-                if (Stog.radarPilot) {
-                    if (i == 3) continue;
-                }
-                std::cout << i << std::endl;
+
+
             }
-        }
+
+            //}
+            // -----------------------------TEST AREA---------------------------
+            if (Stog.test) { // **** FIND NO RECOIL!!! ****
+                for (uintptr_t i = 0; i < 5; ++i) {
+                    if (Stog.radarNPC) {
+                        if (i == 1) continue;
+                        if (i == 4) continue;
+                    }
+                    if (Stog.radarPilot) {
+                        if (i == 3) continue;
+                    }
+                    std::cout << i << std::endl;
+                }
+            }
             //
         // -----------------------------TEST AREA---------------------------
 
+        }
         // Rendering
         ImGui::Render();
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);  
-        
+        glViewport(0, 0, display_w, display_h);
+
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
     }
-
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
 #endif
@@ -1062,4 +1033,5 @@ int main(int, char**)
     glfwTerminate();
     UnhookWindowsHookEx(KBDHook);
     return 0;
+    
 }
