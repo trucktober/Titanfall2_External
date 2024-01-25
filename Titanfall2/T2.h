@@ -14,6 +14,8 @@ struct {
 	uintptr_t pitch = 0x1EA8;
 	uintptr_t yaw = 0x1EAC;
 	uintptr_t team = 0x3A4;
+	uintptr_t enemy_pitch = 0x1C54;
+	uintptr_t enemy_yaw = 0x1C58;
 	std::vector<unsigned int> entEyePos = {0x1008, 0x26C};
 	std::vector<unsigned int> entBodyPos = {0x1008, 0x17C};
 	std::vector<unsigned int> titanBone = { };
@@ -57,12 +59,11 @@ struct {
 	bool aimBody = true;
 	bool aimTog = false;
 	bool isAlive = false;
-	bool NPC_Aimbot = false;
 	bool Lines_NPC_ESP = false, Lines_F_NPC_ESP = false, Lines_Pilot_ESP = true, Lines_F_Pilot_ESP = false;
 	bool Box_NPC_ESP = false, Box_F_NPC_ESP = false, Box_Pilot_ESP = true, Box_F_Pilot_ESP = false;
 	bool Bone_NPC_ESP = false, Bone_F_NPC_ESP = false, Bone_Pilot_ESP = true, Bone_F_Pilot_ESP = false;
 	bool radar = false;
-	bool Pilot_Aimbot = true, Pilot_ESP = true, F_Pilot_ESP = false;
+	bool Pilot_Aimbot = true, NPC_Aimbot = false, Pilot_ESP = true, F_Pilot_ESP = false;
 	float smoothVal = 10.f, aimFOV = 30.f, distance = 500.f;
 	
 	float c;

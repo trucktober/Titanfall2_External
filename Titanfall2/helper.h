@@ -125,6 +125,51 @@ void DrawRadarLine(const Vec2& position) {
 	glEnd();
 }
 
+void DrawEnemyTriangle(Rotate rr, Vec2& pos, static float& ResScale) {
+
+	Vec2 top = { ((1.f * cosf(rr.yaw)) * ResScale) * 0.02f + pos.x, pos.y - (1.f * sinf(rr.yaw)) * 0.02f };
+	
+	Vec2 btmL = { ((1.f * cosf(rr.yaw + PI - 1.f)) * ResScale) * 0.01f + pos.x, pos.y - (1.f * sinf(rr.yaw + PI - 1.f)) * 0.01f };
+
+	Vec2 btmR = { ((1.f * cosf(rr.yaw + PI + 1.f)) * ResScale) * 0.01f + pos.x, pos.y - (1.f * sinf(rr.yaw + PI + 1.f)) * 0.01f };
+
+	glLineWidth(2.f);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_POLYGON);
+	glVertex2f(top.x, top.y);
+	glVertex2f(btmL.x, btmL.y);
+	glVertex2f(btmR.x, btmR.y);
+	glEnd();
+}
+
+void DrawFriendlyTriangle(Rotate rr, static float LinePos, static float& ResScale) {
+	if (Stog.radarNotRotated) {
+		Vec2 top = { ((1.f * cosf(rr.yaw)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw)) * 0.01f };
+		Vec2 btmL = { ((1.f * cosf(rr.yaw + PI - 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw + PI - 1.f)) * 0.01f };
+		Vec2 btmR = { ((1.f * cosf(rr.yaw + PI + 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw + PI + 1.f)) * 0.01f };
+		glLineWidth(2.f);
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glBegin(GL_POLYGON);
+		glVertex2f(top.x, top.y);
+		glVertex2f(btmL.x, btmL.y);
+		glVertex2f(btmR.x, btmR.y);
+		glEnd();
+	}
+	else if (Stog.radarRotaed) {
+		LinePos = PI / 2;
+		Vec2 top = { ((1.f * cosf(LinePos)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos)) * 0.01f };
+		Vec2 btmL = { ((1.f * cosf(LinePos + PI - 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos + PI - 1.f)) * 0.01f };
+		Vec2 btmR = { ((1.f * cosf(LinePos + PI + 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos + PI + 1.f)) * 0.01f };
+		glLineWidth(2.f);
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glBegin(GL_POLYGON);
+		glVertex2f(top.x, top.y);
+		glVertex2f(btmL.x, btmL.y);
+		glVertex2f(btmR.x, btmR.y);
+		glEnd();
+	}
+}
+
 uintptr_t DrawBox(int& health, Vec2& Pos, Vec2& HPos) {
 	float height = ((Pos.y - HPos.y) * -1.f);
 	float width = (height / 6.f);
@@ -235,6 +280,7 @@ uintptr_t RadtoDeg(Rotate& r) {
 	return true;
 }
 
+// Please fix this my god it shorrible
 float SetAim(mem& m, Rotate r, float smoothVal, float aimFOV, uintptr_t& pitchAddr, uintptr_t& yawAddr) {
 
 	Rotate smooth;
@@ -253,14 +299,11 @@ float SetAim(mem& m, Rotate r, float smoothVal, float aimFOV, uintptr_t& pitchAd
 	return true;
 }
 
-uintptr_t Aim(mem& m, Vec3 Head, Vec3 Origin, float& c, Rotate& r, uintptr_t& pitchAddr, uintptr_t& yawAddr) {
+uintptr_t Aim(mem& m, Vec3 Head, Vec3 Origin, float& c, Rotate& r, uintptr_t& pitchAddr, uintptr_t& yawAddr, Vec3& Diff) {
 
 	r.pitch = m.readmem<float>(addr.pitchAddr);
 	r.yaw = m.readmem<float>(addr.yawAddr);
-	
-	Vec3 Diff = { Head.x - Origin.x, Head.y - Origin.y, Head.z - Origin.z}; // sets player cords to 0,0,0
-	c = sqrt(Diff.x * Diff.x + Diff.y * Diff.y + Diff.z * Diff.z);
-	
+		
 	r.yaw = atan2(Diff.y, Diff.x);
 	r.pitch = -asin(Diff.z/c);
 

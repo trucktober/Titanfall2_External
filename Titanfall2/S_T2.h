@@ -46,6 +46,8 @@ struct {
 	 bool radarNPC = true, radarPilot = true, radarNPC_F = false, radarPilot_F = false, radarLocalPlayer = true, radarEdgeDot = true, radarBackground = true;
 	 Vec2 radarPos = {-.87f, .7f};
 	 bool radarMenuEX = false, radarBorder = false, radarExit = false, radarOpen = false;
+
+	 bool radarTest = true;
 }Stog;
 
 struct {
