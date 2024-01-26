@@ -165,7 +165,7 @@ int main(int, char**)
                     ImGui::SeparatorText("Chams");
                     ImGui::Checkbox("Fortnite Chams?", &tog.Chams);
                     ImGui::SeparatorText("Radar");
-                    ImGui::Checkbox("Radar", &tog.radar);
+                    ImGui::Checkbox("Radar", &Stog.radar2D);
                     ImGui::SameLine();
                     if (ImGui::TreeNode("Options")) {
                         Stog.radarMenuEX = true;
@@ -391,23 +391,6 @@ int main(int, char**)
 
 
 
-        //if (tog.SnapLine) {
-        //    Matrix VM = m.readmem<Matrix>(addr.VM);
-        //    for (uintptr_t i = 0; i < 100; ++i) {
-        //        uintptr_t entity = m.readmem<uintptr_t>(addr.entList + i * 0x20);
-        //        uintptr_t player = m.readmem<uintptr_t>(entity + off.playerName);
-        //        uintptr_t isAlive = m.readmem<int>(entity + off.isAlive);
-        //        if (entity == NULL) { break; }
-        //        if (player != 125780153691248) { break; }
-        //        if (entity == localPlayer) { continue; }
-        //        if (isAlive != 1296) { continue; }
-        //        Vec3 Origin = m.readmem<Vec3>(entity + off.playerOrgiin);
-        //        if (WTS(Origin, Pos, VM.VM)) {
-        //            DrawLines(Pos);
-        //        }
-        //    }
-        //}
-
         if (tog.SnapLine) {
             Matrix VM = m.readmem<Matrix>(addr.VM);
 
@@ -496,7 +479,7 @@ int main(int, char**)
                 bool FriendlyNPC = (isNPC == 7236281242589818990) && (localPlayer_Team == team) || (isNPC == 7162254423226544238) && (localPlayer_Team == team);
 
 
-                if ((tog.Bone_F_Pilot_ESP && FriendlyPilot) || (tog.Bone_Pilot_ESP && isPilot)) {
+                if ((tog.Bone_F_Pilot_ESP && FriendlyPilot) || (tog.Bone_Pilot_ESP && isPilot) || (tog.Bone_F_NPC_ESP && FriendlyNPC) || (tog.Bone_NPC_ESP && isRelevantNPC)) {
                     if (health <= 100) {
                         DrawBoneEsp(m, boneMatrix, bone4, bone8);
                         DrawBoneEsp(m, boneMatrix, bone8, bone9); // lower neck to upper neck  
@@ -510,26 +493,6 @@ int main(int, char**)
                         DrawBoneEsp(m, boneMatrix, bone42, bone43); // rigth hand
                         //DrawBoneEsp(m, boneMatrix, bone4, bone60); // left pelvis
                         //DrawBoneEsp(m, boneMatrix, bone4, bone65); //rigth pelvis
-                        DrawBoneEsp(m, boneMatrix, bone4, bone61); // left knee
-                        DrawBoneEsp(m, boneMatrix, bone61, bone62); //left foot     
-                        DrawBoneEsp(m, boneMatrix, bone63, bone63); //left foot
-                        DrawBoneEsp(m, boneMatrix, bone4, bone66); //rigth knee
-                        DrawBoneEsp(m, boneMatrix, bone66, bone67);// right foot
-                    }
-                }
-
-                if ((tog.Bone_F_NPC_ESP && FriendlyNPC) || (tog.Bone_NPC_ESP && isRelevantNPC)) {
-                    if (health <= 100) {
-                        DrawBoneEsp(m, boneMatrix, bone4, bone8);
-                        DrawBoneEsp(m, boneMatrix, bone8, bone9); // lower neck to upper neck  
-                        DrawBoneEsp(m, boneMatrix, bone8, bone13); // left shoulder  
-                        DrawBoneEsp(m, boneMatrix, bone13, bone17); // left elbow
-                        DrawBoneEsp(m, boneMatrix, bone17, bone18); // left wrist
-                        DrawBoneEsp(m, boneMatrix, bone18, bone19); // left hand 
-                        DrawBoneEsp(m, boneMatrix, bone8, bone37); // right shoulder
-                        DrawBoneEsp(m, boneMatrix, bone37, bone41); // right elbow           
-                        DrawBoneEsp(m, boneMatrix, bone41, bone42); //right wrist
-                        DrawBoneEsp(m, boneMatrix, bone42, bone43); // rigth hand
                         DrawBoneEsp(m, boneMatrix, bone4, bone61); // left knee
                         DrawBoneEsp(m, boneMatrix, bone61, bone62); //left foot     
                         DrawBoneEsp(m, boneMatrix, bone63, bone63); //left foot
@@ -586,8 +549,8 @@ int main(int, char**)
                 bool isPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team != team);
                 bool isRelevantNPC = (isNPC == 7236281242589818990) && (localPlayer_Team != team) || (isNPC == 7162254423226544238) && (localPlayer_Team != team);
                 if ((tog.NPC_Aimbot && isRelevantNPC) || (tog.Pilot_Aimbot && isPilot)) {
-                    if (Aim(m, EOrigin, Origin, c, r, pitchAddr, yawAddr, Diff) && isADS == 108) {
-
+                    if (isADS == 108) {
+                        S_Aimbot(m, r, Origin, EOrigin);
                         if (c <= tog.distance) {
                             SetAim(m, r, tog.smoothVal, tog.aimFOV, pitchAddr, yawAddr);
                         }
@@ -846,80 +809,6 @@ int main(int, char**)
             }
         }
 
-        //if (Stog.radar2D) { // **** FIND NO RECOIL!!! ****
-        //    Matrix VM = m.readmem<Matrix>(addr.VM);
-        //    Vec2 RadarRotated = { 0, 0 }, RadarLine_1 = { 0,0 }, RadarLine_2 = { 0,0 };
-        //    DrawRadar(Stog.radarPos);
-        //    if (Stog.radarLocalPlayer) { DrawLocalPlayerDot(Stog.radarPos); }
-        //    if (Stog.radarBorder) { DrawRadarBorder(Stog.radarPos); }
-        //    r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI/180)) - (PI / 2);
-        //    Vec2 Res{ Res.x = GetSystemMetrics(SM_CXSCREEN), Res.y = GetSystemMetrics(SM_CYSCREEN) - 60.f };
-        //    float ResScale = Res.y / Res.x;
-        //    uintptr_t player = m.readmem<uintptr_t>(Saddr.localPlayer);
-        //    Vec3 player_origin = m.readmem<Vec3>(player + Soff.originOff);
-        //    for (uintptr_t i = 0; i < 200; ++i) {
-        //        uintptr_t entList = m.readmem<uintptr_t>(i * 0x8 + addr.npsEntList);
-        //        if (entList == localPlayer) { continue; }
-        //        if (entList == NULL) { break; }
-        //        uintptr_t entName = m.readmem<long long>(m.findDMA(i * 0x8 + addr.npsEntList, Soff.entName));
-        //        if (entName != 7236281242589818990 && entName != 7162254423226544238) { continue; }
-
-        //        Vec3 enemy_origin = m.readmem<Vec3>(entList + off.playerOrgiin);
-
-        //        //int health = m.readmem<int>(entList + off.playerHealth);
-        //        //if (health <= 0) continue;
-        //        //if (health == 130) { health -= 30; }
-        //        //else if (health == 90) { health += 10; }
-        //        //else if (health < 0) { health = 0; }
-
-        //        Vec2 enemy_radar_pos = { (enemy_origin.x - player_origin.x) * (Stog.radarCirc / Stog.radarRenderDist), (enemy_origin.y - player_origin.y) * (Stog.radarCirc / Stog.radarRenderDist) };
-        //        float EnemyRadarMag = enemy_radar_pos.x * enemy_radar_pos.x + enemy_radar_pos.y * enemy_radar_pos.y;
-
-        //        if (Stog.radarRotaed) {                 
-        //            RadarRotated = { enemy_radar_pos.x * cosf(r.yaw) + enemy_radar_pos.y * sinf(r.yaw), enemy_radar_pos.x * sinf(r.yaw) - enemy_radar_pos.y * cosf(r.yaw) };
-        //            Vec2 NDC_Rotated = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
-        //            if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) {
-        //                DrawNPCDot(NDC_Rotated);
-        //            }
-        //            else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) {
-        //                RadarRotated.x = (RadarRotated.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-        //                RadarRotated.y = (RadarRotated.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-        //                Vec2 NDC_Rotated_2 = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
-        //                DrawNPCDot(NDC_Rotated_2);
-        //            }
-        //            float LinePos = (5 * PI / 4);
-        //            LinePos *= Stog.radarCirc / sqrt(LinePos * LinePos + LinePos * LinePos);                   
-        //            Vec2 line_NDC_1 = { Stog.radarPos.x + LinePos * ResScale, Stog.radarPos.y + LinePos }, line_NDC_2 = { Stog.radarPos.x - LinePos * ResScale, Stog.radarPos.y + LinePos };
-        //            DrawRadarLine(line_NDC_1);
-        //            DrawRadarLine(line_NDC_2);
-        //        }
-        //        else if (Stog.radarNotRotated) {
-
-        //            if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) { // draw in circle
-        //                Vec2 NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
-        //                DrawNPCDot(NDC);
-        //            } else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) { // draw edge of circle
-        //                enemy_radar_pos.x = (enemy_radar_pos.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-        //                enemy_radar_pos.y = (enemy_radar_pos.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
-        //                Vec2 enemy_NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
-        //                DrawNPCDot(enemy_NDC);
-        //            }
-        //            RadarLine_1 = { 1.f * cosf(r.yaw - .8f), 1.f * sinf(r.yaw - .8f) }, RadarLine_2 = { 1.f * cosf(r.yaw + .8f), 1.f * sinf(r.yaw + .8f) };
-        //            float LineRadarMag = Stog.radarCirc / sqrt(RadarLine_1.x * RadarLine_1.x + RadarLine_1.y * RadarLine_1.y);
-        //            RadarLine_1.x *= LineRadarMag;
-        //            RadarLine_1.y *= LineRadarMag;
-        //            RadarLine_2.x *= LineRadarMag;
-        //            RadarLine_2.y *= LineRadarMag;
-        //            Vec2 player_NDC1 = { Stog.radarPos.x + RadarLine_1.x * ResScale, Stog.radarPos.y - RadarLine_1.y }, player_NDC2 = { Stog.radarPos.x + RadarLine_2.x * ResScale, Stog.radarPos.y - RadarLine_2.y };
-        //            if (player_NDC1.x && player_NDC1.y && player_NDC2.x && player_NDC2.y) {
-        //                DrawRadarLine(player_NDC1);
-        //                DrawRadarLine(player_NDC2);
-        //            }
-        //        }
-
-        //    }
-        //}
-
         if (Stog.radar2D) {
             // SETUP 
             Rotate r2;
@@ -928,14 +817,14 @@ int main(int, char**)
             DrawRadar(Stog.radarPos);
             if (Stog.radarLocalPlayer) { DrawLocalPlayerDot(Stog.radarPos); }
             if (Stog.radarBorder) { DrawRadarBorder(Stog.radarPos); }
-            r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI / 180)) - (PI / 2);
+            r.yaw = ((m.readmem<float>(m.readmem<uintptr_t>(addr.localplayer) + off.yaw)) * (PI / 180) - (PI / 2));
             Vec2 Res{ Res.x = GetSystemMetrics(SM_CXSCREEN), Res.y = GetSystemMetrics(SM_CYSCREEN) - 60.f };
             float ResScale = Res.y / Res.x;
             // ------- 
 
             // LOCAL PLAYER CHECK      
             Vec3 player_origin = m.readmem<Vec3>(localPlayer + off.playerOrgiin);
-            std::cout << player_origin.x << std::endl;
+            Vec3 tri_color = {};
             // ------- 
             for (uintptr_t i = 0; i < 200; ++i) {
                 uintptr_t entList = i * 0x8 + addr.npsEntList;
@@ -948,33 +837,38 @@ int main(int, char**)
                 uintptr_t localPlayer_Team = m.readmem<int>(localPlayer + off.team);
                 uintptr_t player = m.readmem<uintptr_t>(entity + off.playerName);
                 r2.yaw = m.readmem<float>(entity + off.enemy_yaw) * (PI / 180);
-
+                
                 bool isPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team != team);
                 bool isRelevantNPC = (isNPC == 7236281242589818990) && (localPlayer_Team != team) || (isNPC == 7162254423226544238) && (localPlayer_Team != team);
                 bool FriendlyPilot = (isAlive == 1296) && (player == 125780153691248) && (localPlayer_Team == team);
                 bool FriendlyNPC = (isNPC == 7236281242589818990) && (localPlayer_Team == team) || (isNPC == 7162254423226544238) && (localPlayer_Team == team);
-
-
+                if (FriendlyNPC || FriendlyPilot) tri_color = {0.f, 0.76f, 1.f};
+                if (isPilot || isRelevantNPC) tri_color = { 1.f, 0.f, 0.f };
                 // THE REST OF THE CODE LOL 
-                if ((Stog.radarNPC && FriendlyNPC) || (Stog.radarNPC_F && isRelevantNPC) || (Stog.radarPilot && isPilot) || (Stog.radarPilot_F && FriendlyPilot)) { 
+                if ((Stog.radarNPC && isRelevantNPC) || (Stog.radarNPC_F && FriendlyNPC) || (Stog.radarPilot && isPilot) || (Stog.radarPilot_F && FriendlyPilot)) {
                     Vec3 enemy_origin = m.readmem<Vec3>(entity + off.playerOrgiin);
                     Vec2 enemy_radar_pos = { (enemy_origin.x - player_origin.x) * (Stog.radarCirc / Stog.radarRenderDist), (enemy_origin.y - player_origin.y) * (Stog.radarCirc / Stog.radarRenderDist) };
                     float EnemyRadarMag = enemy_radar_pos.x * enemy_radar_pos.x + enemy_radar_pos.y * enemy_radar_pos.y;
 
                     if (Stog.radarRotaed) { // no triangle spin
+                        //r.yaw -= (PI / 2);
+                        r2.yaw = r.yaw - r2.yaw;
                         RadarRotated = { enemy_radar_pos.x * cosf(r.yaw) + enemy_radar_pos.y * sinf(r.yaw), enemy_radar_pos.x * sinf(r.yaw) - enemy_radar_pos.y * cosf(r.yaw) };
                         Vec2 NDC_Rotated = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
                         if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) {
-                            DrawNPCDot(NDC_Rotated); 
-                            DrawEnemyTriangle(r2, NDC_Rotated, ResScale);
-                            
+                            if (FriendlyNPC) DrawNPCDot(NDC_Rotated, tri_color);
+                            if (isRelevantNPC) DrawNPCDot(NDC_Rotated, tri_color);
+                            if (isPilot) DrawEnemyTriangle(r2, NDC_Rotated, ResScale, tri_color);
+                            if (FriendlyPilot) DrawEnemyTriangle(r2, NDC_Rotated, ResScale, tri_color);
                         }
                         else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) {
                             RadarRotated.x = (RadarRotated.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
                             RadarRotated.y = (RadarRotated.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
                             Vec2 NDC_Rotated_2 = { Stog.radarPos.x + RadarRotated.x * ResScale, Stog.radarPos.y - RadarRotated.y };
-                            DrawNPCDot(NDC_Rotated_2);
-                            DrawEnemyTriangle(r2, NDC_Rotated_2, ResScale);
+                            if (FriendlyNPC) DrawNPCDot(NDC_Rotated_2, tri_color);
+                            if (isRelevantNPC) DrawNPCDot(NDC_Rotated_2, tri_color);
+                            if (FriendlyPilot) DrawEnemyTriangle(r2, NDC_Rotated_2, ResScale, tri_color);
+                            if (isPilot) DrawEnemyTriangle(r2, NDC_Rotated_2, ResScale, tri_color);
                         }
                         float LinePos = (5 * PI / 4);
                         LinePos *= Stog.radarCirc / sqrt(LinePos * LinePos + LinePos * LinePos);
@@ -988,15 +882,19 @@ int main(int, char**)
                         
                         if (EnemyRadarMag <= (Stog.radarCirc * Stog.radarCirc)) { // draw in circle
                             Vec2 NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
-                            DrawNPCDot(NDC);  
-                            DrawEnemyTriangle(r2, NDC, ResScale);
+                            if (FriendlyNPC) DrawNPCDot(NDC, tri_color);
+                            if (isRelevantNPC) DrawNPCDot(NDC, tri_color);
+                            if (isPilot) DrawEnemyTriangle(r2, NDC, ResScale, tri_color);
+                            if (FriendlyPilot) DrawEnemyTriangle(r2, NDC, ResScale, tri_color);
                         }
                         else if (EnemyRadarMag > (Stog.radarCirc * Stog.radarCirc) && Stog.radarEdgeDot) { // draw edge of circle
                             enemy_radar_pos.x = (enemy_radar_pos.x / sqrt(EnemyRadarMag)) * Stog.radarCirc;
                             enemy_radar_pos.y = (enemy_radar_pos.y / sqrt(EnemyRadarMag)) * Stog.radarCirc;
                             Vec2 enemy_NDC = { Stog.radarPos.x + enemy_radar_pos.x * ResScale, Stog.radarPos.y - enemy_radar_pos.y };
-                            DrawNPCDot(enemy_NDC);
-                            DrawEnemyTriangle(r2, enemy_NDC, ResScale);
+                            if (FriendlyNPC) DrawNPCDot(enemy_NDC, tri_color);
+                            if (isRelevantNPC) DrawNPCDot(enemy_NDC, tri_color);
+                            if (isPilot) DrawEnemyTriangle(r2, enemy_NDC, ResScale, tri_color);
+                            if (FriendlyPilot) DrawEnemyTriangle(r2, enemy_NDC, ResScale, tri_color);
                         }
                         RadarLine_1 = { 1.f * cosf(r.yaw - .8f), 1.f * sinf(r.yaw - .8f) }, RadarLine_2 = { 1.f * cosf(r.yaw + .8f), 1.f * sinf(r.yaw + .8f) };
                         float LineRadarMag = Stog.radarCirc / sqrt(RadarLine_1.x * RadarLine_1.x + RadarLine_1.y * RadarLine_1.y);
@@ -1012,23 +910,7 @@ int main(int, char**)
                         DrawFriendlyTriangle(r, NULL, ResScale);
                         
                     }
-                    //if (Stog.radarTest) {
-                    //    Vec2 offset = {};
-                    //    Vec2 rotation = { (1.f * cosf(r.yaw)) * ResScale, 1.f * sinf(r.yaw) };
-                    //    rotation.x *= 0.08f;
-                    //    rotation.y *= 0.08f;                      
-                    //    rotation.x = Stog.radarPos.x + rotation.x;
-                    //    rotation.y = Stog.radarPos.y + rotation.y;
-                    //    DrawLocalPlayerDot(rotation);
 
-                    //    Vec2 rotation2 = { (1.f * cosf(r.yaw + 0.5f)) * ResScale, 1.f * sinf(r.yaw + 0.5f) };
-                    //    rotation2.x *= 0.08f;
-                    //    rotation2.y *= 0.08f;
-
-                    //    rotation2.x = Stog.radarPos.x + rotation2.x;
-                    //    rotation2.y = Stog.radarPos.y + rotation2.y;
-                    //    DrawLocalPlayerDot(rotation2);
-                    //}
                 }
 
 

@@ -108,8 +108,8 @@ void DrawLocalPlayerDot(Vec2& pos) {
 	glEnd();
 }
 
-void DrawNPCDot(const Vec2& position) {
-	glColor3f(Stog.NPC_dot_color[0], Stog.NPC_dot_color[1], Stog.NPC_dot_color[2]); // Red color for enemy dot
+void DrawNPCDot(const Vec2& position, Vec3 tri_color) {
+	glColor3f(tri_color.x, tri_color.y, tri_color.z); // Red color for enemy dot
 	glPointSize(Stog.NPCSize); // Size of the dot
 	glBegin(GL_POINTS);
 	glVertex2f(position.x, position.y);
@@ -125,34 +125,37 @@ void DrawRadarLine(const Vec2& position) {
 	glEnd();
 }
 
-void DrawEnemyTriangle(Rotate rr, Vec2& pos, static float& ResScale) {
+void DrawEnemyTriangle(Rotate rr, Vec2& pos, static float& ResScale, Vec3 tri_color) {
 
-	Vec2 top = { ((1.f * cosf(rr.yaw)) * ResScale) * 0.02f + pos.x, pos.y - (1.f * sinf(rr.yaw)) * 0.02f };
-	
+	Vec2 top = { ((1.f * cosf(rr.yaw)) * ResScale) * 0.015f + pos.x, pos.y - (1.f * sinf(rr.yaw)) * 0.015f };
 	Vec2 btmL = { ((1.f * cosf(rr.yaw + PI - 1.f)) * ResScale) * 0.01f + pos.x, pos.y - (1.f * sinf(rr.yaw + PI - 1.f)) * 0.01f };
-
 	Vec2 btmR = { ((1.f * cosf(rr.yaw + PI + 1.f)) * ResScale) * 0.01f + pos.x, pos.y - (1.f * sinf(rr.yaw + PI + 1.f)) * 0.01f };
-
+	Vec2 mid = { ((1.f * cosf(rr.yaw)) * ResScale) * -0.015f + pos.x, pos.y - (1.f * sinf(rr.yaw)) * -0.015f };
 	glLineWidth(2.f);
-	glColor3f(1.0f, 0.0f, 0.0f);
+	glColor3f(tri_color.x, tri_color.y, tri_color.z);
 	glBegin(GL_POLYGON);
 	glVertex2f(top.x, top.y);
 	glVertex2f(btmL.x, btmL.y);
+	glVertex2f(mid.x, mid.y);
 	glVertex2f(btmR.x, btmR.y);
 	glEnd();
 }
 
 void DrawFriendlyTriangle(Rotate rr, static float LinePos, static float& ResScale) {
 	if (Stog.radarNotRotated) {
-		Vec2 top = { ((1.f * cosf(rr.yaw)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw)) * 0.01f };
+		Vec2 top = { ((1.f * cosf(rr.yaw)) * ResScale) * 0.015f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw)) * 0.015f };
 		Vec2 btmL = { ((1.f * cosf(rr.yaw + PI - 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw + PI - 1.f)) * 0.01f };
 		Vec2 btmR = { ((1.f * cosf(rr.yaw + PI + 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw + PI + 1.f)) * 0.01f };
+		Vec2 mid = { ((1.f * cosf(rr.yaw)) * ResScale) * -0.01f + Stog.radarPos.x, Stog.radarPos.y - (1.f * sinf(rr.yaw)) * -0.01f };
+
 		glLineWidth(2.f);
 		glColor3f(0.0f, 1.0f, 0.0f);
 		glBegin(GL_POLYGON);
 		glVertex2f(top.x, top.y);
 		glVertex2f(btmL.x, btmL.y);
+		glVertex2f(mid.x, mid.y);
 		glVertex2f(btmR.x, btmR.y);
+		
 		glEnd();
 	}
 	else if (Stog.radarRotaed) {
@@ -160,11 +163,13 @@ void DrawFriendlyTriangle(Rotate rr, static float LinePos, static float& ResScal
 		Vec2 top = { ((1.f * cosf(LinePos)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos)) * 0.01f };
 		Vec2 btmL = { ((1.f * cosf(LinePos + PI - 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos + PI - 1.f)) * 0.01f };
 		Vec2 btmR = { ((1.f * cosf(LinePos + PI + 1.f)) * ResScale) * 0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos + PI + 1.f)) * 0.01f };
+		Vec2 mid = { ((1.f * cosf(LinePos)) * ResScale) * -0.01f + Stog.radarPos.x, Stog.radarPos.y + (1.f * sinf(LinePos)) * -0.01f };
 		glLineWidth(2.f);
 		glColor3f(0.0f, 1.0f, 0.0f);
 		glBegin(GL_POLYGON);
 		glVertex2f(top.x, top.y);
 		glVertex2f(btmL.x, btmL.y);
+		glVertex2f(mid.x, mid.y);
 		glVertex2f(btmR.x, btmR.y);
 		glEnd();
 	}
@@ -317,7 +322,7 @@ void radarGUI() {
 		ImGui::SetWindowSize({ 550.f, 500.f });
 		if (ImGui::BeginTabBar("Settings")) {
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, ImGui::GetStyle().FramePadding.y - 2.f));
-			ImGui::SameLine(187.f);
+			ImGui::SameLine(495.f);
 			if (ImGui::Button("Exit")) { Stog.radarExit = true; }
 			else { Stog.radarExit = false; };
 			ImGui::PopStyleVar();
