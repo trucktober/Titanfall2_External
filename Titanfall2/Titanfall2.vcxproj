@@ -24,6 +24,7 @@
     <ProjectGuid>{7d2620ed-7dd3-4a40-969a-e37269fd04e1}</ProjectGuid>
     <RootNamespace>Titanfall2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Titanfall2_External</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
